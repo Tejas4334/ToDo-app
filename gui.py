@@ -34,12 +34,22 @@ window = Gui.Window("To-Do List",
                               [exit_button],
                               ],
                     font = ("Helvetica",12))
+window.finalize()
 
 while True:
 
-    event,values = window.read(timeout=10)
-    window['clock'].update(value = time.strftime("%d-%b-%Y , %H:%M:%S"))
+    event,values = window.read(timeout=1000)
 
+    # _______________update only if file is open_________________
+    if event in ("Exit" , Gui.WIN_CLOSED):
+        break
+
+    try:
+        window['clock'].update(value = time.strftime("%d-%b-%Y , %H:%M:%S"))
+    except Exception as e:
+        print("Tried to update a closed window:", e)
+        break
+    #================================================================
     match event:
 
         case "Add":
@@ -56,7 +66,8 @@ while True:
             todos.append(new_todo)
             functions.write_todos(todos)
 
-            functions.Update_val(window,todos)
+            window['todo'].update(value="")
+            window["TodoList"].update(values=todos)
 
         case "Edit":
             try:
@@ -76,7 +87,10 @@ while True:
 
                 functions.write_todos(todos)
 
-                functions.Update_val(window,todos)
+
+
+                window['todo'].update(value="")  # cleans the text_field
+                window["TodoList"].update(values=todos)
 
             except IndexError:
                 print("Make sure you select a task to edit")
@@ -90,14 +104,16 @@ while True:
                 todos.remove(Complete_todo)
                 functions.write_todos(todos)
 
-                functions.Update_val(window,todos)
+                window['todo'].update(value="")  # cleans the text_field
+                window["TodoList"].update(values=todos)
 
             except IndexError:
                 print("Make sure you select a task to mark complete")
                 Gui.popup("Make sure you select a task to mark complete")
 
-        case "Exit" | Gui.WIN_CLOSED:
-            break
+
+
+
 
 window.close()
 
