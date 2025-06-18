@@ -1,4 +1,4 @@
-from modules.functions import get_todo,write_todos
+from functions import get_todo,write_todos
 import time
 now = time.strftime("%d-%b-%Y , %H:%M")
 User_prompt = "Enter Todo : "
