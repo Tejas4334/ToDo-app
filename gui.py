@@ -1,6 +1,9 @@
 import functions
 import FreeSimpleGUI as Gui
 
+
+
+
 label = Gui.Text("Type a TODO")
 input_box = Gui.InputText(key ="todo", tooltip="Enter Todo")
 add_button = Gui.Button("Add")
@@ -29,6 +32,7 @@ while True:
     print(values)
 
     match event:
+
         case "Add":
 
             todos = functions.get_todo()
@@ -36,6 +40,7 @@ while True:
             todos.append(new_todo)
             functions.write_todos(todos)
 
+            functions.Update_val(window,todos)
 
         case "Edit":
             todo_to_edit = values["TodoList"][0]
@@ -47,12 +52,16 @@ while True:
 
             functions.write_todos(todos)
 
+            functions.Update_val(window,todos)
 
         case "Complete":
             Complete_todo = values["TodoList"][0]
+
             todos = functions.get_todo()
             todos.remove(Complete_todo)
             functions.write_todos(todos)
+
+            functions.Update_val(window,todos)
 
         case "Exit" | Gui.WIN_CLOSED:
             break
