@@ -1,15 +1,18 @@
 import functions
 import FreeSimpleGUI as Gui
+import time
 
+Gui.theme("Topanga")
 
-
-
+clock = Gui.Text(key="clock")
 label = Gui.Text("Type a TODO")
-input_box = Gui.InputText(key ="todo", tooltip="Enter Todo")
-add_button = Gui.Button("Add")
-exit_button = Gui.Button("Exit")
-edit_button = Gui.Button("Edit")
-complete_button = Gui.Button("Complete")
+input_box = Gui.InputText(key ="todo", tooltip="Enter Todo",size=45)
+add_button = Gui.Button("Add",size=8)
+exit_button = Gui.Button("Exit",size=8)
+edit_button = Gui.Button("Edit",size=8)
+complete_button = Gui.Button("Complete",size=8)
+
+prompt_msg = Gui.Text(key = "prompt")
 
 todo_list = Gui.Listbox(values = functions.get_todo(),
                         key = "TodoList",
@@ -18,18 +21,19 @@ todo_list = Gui.Listbox(values = functions.get_todo(),
                         )
 
 window = Gui.Window("To-Do List",
-                    layout = [
+                    layout = [[clock],
                               [label],
                               [input_box,add_button],
                               [[edit_button,complete_button],todo_list],
+                              [prompt_msg],
                               [exit_button],
                               ],
                     font = ("Helvetica",12))
 
 while True:
-    event,values = window.read()
-    print(event)
-    print(values)
+
+    event,values = window.read(timeout=10)
+    window['clock'].update(value = time.strftime("%d-%b-%Y , %H:%M:%S"))
 
     match event:
 
@@ -37,31 +41,55 @@ while True:
 
             todos = functions.get_todo()
             new_todo = values['todo']+"\n"
+
+            if new_todo == "\n":
+                print("Make sure you enter the task to Add")
+                Gui.popup("Make sure you enter the task to Add")
+
+                continue
+
             todos.append(new_todo)
             functions.write_todos(todos)
 
             functions.Update_val(window,todos)
 
         case "Edit":
-            todo_to_edit = values["TodoList"][0]
-            new_todo = values["todo"] + "\n"
+            try:
+                todo_to_edit = values["TodoList"][0]
+                new_todo = values["todo"] + "\n"
 
-            todos = functions.get_todo()
-            index = todos.index(todo_to_edit)
-            todos[index] = new_todo
+                if new_todo == "\n":
+                    print("Make sure you enter the task to Edit with")
+                    Gui.popup("Make sure you enter the task to Edit with")
+                    continue
 
-            functions.write_todos(todos)
 
-            functions.Update_val(window,todos)
+
+                todos = functions.get_todo()
+                index = todos.index(todo_to_edit)
+                todos[index] = new_todo
+
+                functions.write_todos(todos)
+
+                functions.Update_val(window,todos)
+
+            except IndexError:
+                print("Make sure you select a task to edit")
+                Gui.popup("Make sure you select a task to edit")
 
         case "Complete":
-            Complete_todo = values["TodoList"][0]
+            try:
+                Complete_todo = values["TodoList"][0]
 
-            todos = functions.get_todo()
-            todos.remove(Complete_todo)
-            functions.write_todos(todos)
+                todos = functions.get_todo()
+                todos.remove(Complete_todo)
+                functions.write_todos(todos)
 
-            functions.Update_val(window,todos)
+                functions.Update_val(window,todos)
+
+            except IndexError:
+                print("Make sure you select a task to mark complete")
+                Gui.popup("Make sure you select a task to mark complete")
 
         case "Exit" | Gui.WIN_CLOSED:
             break
