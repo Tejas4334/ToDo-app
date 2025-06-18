@@ -89,7 +89,7 @@ while True:
 
 
 
-                window['todo'].update(value="")  # cleans the text_field
+                window['todo'].update(value="")
                 window["TodoList"].update(values=todos)
 
             except IndexError:
@@ -104,7 +104,7 @@ while True:
                 todos.remove(Complete_todo)
                 functions.write_todos(todos)
 
-                window['todo'].update(value="")  # cleans the text_field
+                window['todo'].update(value="")
                 window["TodoList"].update(values=todos)
 
             except IndexError:
